@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设计师项目管理仪表板</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+            max-width: 1600px;
+            margin: 0 auto;
+            gap: 25px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
+            color: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        /* 设计师管理区域 */
+        .designer-section {
+            flex: 1;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: #2c3e50;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title i {
+            margin-right: 12px;
+            color: #3498db;
+        }
+
+        .designer-form {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border: 1px solid #e9ecef;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        input:focus, select:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.25);
+            outline: none;
+        }
+
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        button i {
+            margin-right: 8px;
+        }
+
+        button:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-edit {
+            background: #f39c12;
+        }
+
+        .btn-edit:hover {
+            background: #d35400;
+        }
+
+        .btn-success {
+            background: #27ae60;
+        }
+
+        .btn-success:hover {
+            background: #219653;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        /* 设计师列表 */
+        .designer-list {
+            margin-top: 25px;
+        }
+
+        .designer-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #3498db;
+            transition: all 0.3s;
+        }
+
+        .designer-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .designer-name {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .designer-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* 主内容区域 */
+        .main-section {
+            flex: 3;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .project-form-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .project-form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+
+        .conditional-checkbox {
+            margin-left: 30px;
+        }
+
+        .projects-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .filter-control {
+            min-width: 200px;
+        }
+
+        /* 项目表格样式 */
+        .projects-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .projects-table th {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            position: sticky;
+            top: 0;
+        }
+
+        .projects-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .projects-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .projects-table tr:hover {
+            background-color: #e9f7fe;
+        }
+
+        .status-true {
+            color: #27ae60;
+            font-weight: 600;
+        }
+
+        .status-false {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .indicator-true {
+            background: #27ae60;
+        }
+
+        .indicator-false {
+            background: #e74c3c;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .table-btn {
+            padding: 6px 10px;
+            font-size: 14px;
+        }
+
+        .no-projects {
+            text-align: center;
+            padding: 50px;
+            color: #7f8c8d;
+        }
+
+        .edit-indicator {
+            background: #f39c12;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .container {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .project-form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .projects-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .filter-bar {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><i class="fas fa-paint-roller"></i> 设计师项目管理仪表板</h1>
+        <p class="subtitle">跟踪项目进度、设计师表现与各项指标</p>
+    </header>
+
+    <div class="container">
+        <!-- 设计师管理区域 -->
+        <section class="designer-section">
+            <h2 class="section-title"><i class="fas fa-user-tie"></i> 设计师管理</h2>
+            
+            <div class="designer-form">
+                <div class="form-group">
+                    <label for="designer-name">设计师姓名</label>
+                    <input type="text" id="designer-name" placeholder="输入设计师全名">
+                </div>
+                <button id="add-designer-btn" class="btn-success"><i class="fas fa-plus"></i> 添加设计师</button>
+            </div>
+            
+            <div class="designer-list">
+                <h3><i class="fas fa-list"></i> 设计师列表</h3>
+                <div id="designers-container"></div>
+            </div>
+        </section>
+        
+        <!-- 主内容区域 -->
+        <div class="main-section">
+            <!-- 项目添加区域 -->
+            <section class="project-form-section">
+                <div class="form-header">
+                    <h2 class="section-title"><i class="fas fa-folder-plus"></i> 添加新项目</h2>
+                    <div id="edit-indicator" style="display: none;">
+                        <span style="background: #f39c12; color: white; padding: 5px 10px; border-radius: 20px; font-weight: bold;">
+                            <i class="fas fa-edit"></i> 编辑模式
+                        </span>
+                    </div>
+                </div>
+                
+                <form id="project-form">
+                    <div class="project-form-grid">
+                        <div class="form-group">
+                            <label for="project-designer">设计师 *</label>
+                            <select id="project-designer" required>
+                                <option value="">选择设计师</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="project-address">客户地址 *</label>
+                            <input type="text" id="project-address" placeholder="输入详细地址" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>项目状态</label>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="project-signed">
+                                <label for="project-signed">已签单</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="project-started">
+                                <label for="project-started">已开工</label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="project-effect-drawing">
+                                <label for="project-effect-drawing">已画效果图</label>
+                            </div>
+                            <div class="checkbox-group conditional-checkbox">
+                                <input type="checkbox" id="project-effect-settled">
+                                <label for="project-effect-settled">效果图已结算</label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="project-construction-drawing">
+                                <label for="project-construction-drawing">已画施工图</label>
+                            </div>
+                            <div class="checkbox-group conditional-checkbox">
+                                <input type="checkbox" id="project-construction-uploaded">
+                                <label for="project-construction-uploaded">施工图已上传</label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <button type="submit" class="btn-success"><i class="fas fa-save"></i> 保存项目</button>
+                            <button type="button" id="cancel-edit-btn" class="btn-secondary" style="display: none; margin-left: 10px;">
+                                <i class="fas fa-times"></i> 取消编辑
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </section>
+            
+            <!-- 项目展示区域 -->
+            <section class="projects-section">
+                <div class="filter-bar">
+                    <h2 class="section-title"><i class="fas fa-project-diagram"></i> 项目列表</h2>
+                    
+                    <div class="filter-group">
+                        <div class="form-group filter-control">
+                            <select id="designer-filter">
+                                <option value="all">所有设计师</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group filter-control">
+                            <select id="status-filter">
+                                <option value="all">所有状态</option>
+                                <option value="signed">已签单</option>
+                                <option value="unsigned">未签单</option>
+                                <option value="started">已开工</option>
+                                <option value="effect-unsettled">效果图未结算</option>
+                                <option value="construction-unuploaded">施工图未上传</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="projects-container">
+                    <table class="projects-table">
+                        <thead>
+                            <tr>
+                                <th>设计师</th>
+                                <th>客户地址</th>
+                                <th>签单</th>
+                                <th>开工</th>
+                                <th>效果图</th>
+                                <th>施工图</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="projects-table-body">
+                            <!-- 项目行将通过JS动态生成 -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        // 数据结构
+        let designers = JSON.parse(localStorage.getItem('designers')) || [];
+        let projects = JSON.parse(localStorage.getItem('projects')) || [];
+        
+        // 编辑状态
+        let editingProjectId = null;
+        
+        // DOM 元素
+        const designersContainer = document.getElementById('designers-container');
+        const projectsTableBody = document.getElementById('projects-table-body');
+        const designerSelect = document.getElementById('project-designer');
+        const editIndicator = document.getElementById('edit-indicator');
+        const cancelEditBtn = document.getElementById('cancel-edit-btn');
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            renderDesigners();
+            renderDesignerOptions();
+            initFilters();
+            renderProjects();
+            setupEventListeners();
+            setupConditionalCheckboxes();
+        });
+        
+        // 设置条件复选框
+        function setupConditionalCheckboxes() {
+            // 效果图完成状态变化时
+            document.getElementById('project-effect-drawing').addEventListener('change', function() {
+                const effectSettledCheckbox = document.getElementById('project-effect-settled');
+                effectSettledCheckbox.disabled = !this.checked;
+                if (!this.checked) {
+                    effectSettledCheckbox.checked = false;
+                }
+            });
+            
+            // 施工图完成状态变化时
+            document.getElementById('project-construction-drawing').addEventListener('change', function() {
+                const constructionUploadedCheckbox = document.getElementById('project-construction-uploaded');
+                constructionUploadedCheckbox.disabled = !this.checked;
+                if (!this.checked) {
+                    constructionUploadedCheckbox.checked = false;
+                }
+            });
+        }
+        
+        // 初始化筛选器
+        function initFilters() {
+            const designerFilter = document.getElementById('designer-filter');
+            designerFilter.innerHTML = '<option value="all">所有设计师</option>';
+            
+            designers.forEach(designer => {
+                const option = document.createElement('option');
+                option.value = designer.id;
+                option.textContent = designer.name;
+                designerFilter.appendChild(option);
+            });
+        }
+        
+        // 渲染设计师列表
+        function renderDesigners() {
+            designersContainer.innerHTML = '';
+            
+            if (designers.length === 0) {
+                designersContainer.innerHTML = '<div class="no-projects"><i class="fas fa-user-slash fa-2x"></i><p>暂无设计师，请添加设计师</p></div>';
+                return;
+            }
+            
+            designers.forEach(designer => {
+                const designerElement = document.createElement('div');
+                designerElement.className = 'designer-item';
+                designerElement.innerHTML = `
+                    <div class="designer-name">${designer.name}</div>
+                    <div class="designer-actions">
+                        <button class="btn-edit edit-designer" data-id="${designer.id}">
+                            <i class="fas fa-edit"></i> 编辑
+                        </button>
+                        <button class="btn-danger delete-designer" data-id="${designer.id}">
+                            <i class="fas fa-trash"></i> 删除
+                        </button>
+                    </div>
+                `;
+                designersContainer.appendChild(designerElement);
+            });
+        }
+        
+        // 渲染设计师下拉选项
+        function renderDesignerOptions() {
+            designerSelect.innerHTML = '<option value="">选择设计师</option>';
+            
+            designers.forEach(designer => {
+                const option = document.createElement('option');
+                option.value = designer.id;
+                option.textContent = designer.name;
+                designerSelect.appendChild(option);
+            });
+        }
+        
+        // 渲染项目列表
+        function renderProjects() {
+            projectsTableBody.innerHTML = '';
+            
+            const selectedDesignerId = document.getElementById('designer-filter').value;
+            const selectedStatus = document.getElementById('status-filter').value;
+            
+            let filteredProjects = projects;
+            
+            // 按设计师筛选
+            if (selectedDesignerId !== 'all') {
+                filteredProjects = filteredProjects.filter(project => project.designerId === selectedDesignerId);
+            }
+            
+            // 按状态筛选
+            if (selectedStatus !== 'all') {
+                switch(selectedStatus) {
+                    case 'signed':
+                        filteredProjects = filteredProjects.filter(p => p.signed);
+                        break;
+                    case 'unsigned':
+                        filteredProjects = filteredProjects.filter(p => !p.signed);
+                        break;
+                    case 'started':
+                        filteredProjects = filteredProjects.filter(p => p.started);
+                        break;
+                    case 'effect-unsettled':
+                        filteredProjects = filteredProjects.filter(p => p.effectDrawing && !p.effectSettled);
+                        break;
+                    case 'construction-unuploaded':
+                        filteredProjects = filteredProjects.filter(p => p.constructionDrawing && !p.constructionUploaded);
+                        break;
+                }
+            }
+            
+            if (filteredProjects.length === 0) {
+                projectsTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="no-projects">
+                            <i class="fas fa-folder-open fa-3x"></i>
+                            <p>没有找到符合条件的项目</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            filteredProjects.forEach(project => {
+                const designer = designers.find(d => d.id === project.designerId);
+                const designerName = designer ? designer.name : '未知设计师';
+                const isSigned = project.signed;
+                
+                const projectRow = document.createElement('tr');
+                if (editingProjectId === project.id) {
+                    projectRow.style.backgroundColor = '#fff8e1';
+                }
+                
+                projectRow.innerHTML = `
+                    <td>${designerName}</td>
+                    <td>${project.address}</td>
+                    <td class="${isSigned ? 'status-true' : 'status-false'}">
+                        <span class="status-indicator ${isSigned ? 'indicator-true' : 'indicator-false'}"></span>
+                        ${isSigned ? '已签单' : '未签单'}
+                    </td>
+                    <td class="${isSigned ? (project.started ? 'status-true' : 'status-false') : 'status-true'}">
+                        <span class="status-indicator ${isSigned ? (project.started ? 'indicator-true' : 'indicator-false') : 'indicator-true'}"></span>
+                        ${project.started ? '已开工' : '未开工'}
+                    </td>
+                    <td>
+                        ${project.effectDrawing ? 
+                            `<span class="${project.effectSettled ? 'status-true' : 'status-false'}">
+                                <span class="status-indicator ${project.effectSettled ? 'indicator-true' : 'indicator-false'}"></span>
+                                已完成${project.effectSettled ? '' : ' (未结算)'}
+                            </span>` : 
+                            `<span class="${isSigned ? 'status-false' : 'status-true'}">
+                                <span class="status-indicator ${isSigned ? 'indicator-false' : 'indicator-true'}"></span>
+                                未完成
+                            </span>`}
+                    </td>
+                    <td>
+                        ${project.constructionDrawing ? 
+                            `<span class="${isSigned ? (project.constructionUploaded ? 'status-true' : 'status-false') : 'status-true'}">
+                                <span class="status-indicator ${isSigned ? (project.constructionUploaded ? 'indicator-true' : 'indicator-false') : 'indicator-true'}"></span>
+                                已完成${isSigned && !project.constructionUploaded ? ' (未上传)' : ''}
+                            </span>` : 
+                            `<span class="${isSigned ? 'status-false' : 'status-true'}">
+                                <span class="status-indicator ${isSigned ? 'indicator-false' : 'indicator-true'}"></span>
+                                未完成
+                            </span>`}
+                    </td>
+                    <td>
+                        <div class="table-actions">
+                            <button class="btn-edit edit-project table-btn" data-id="${project.id}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-danger delete-project table-btn" data-id="${project.id}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                projectsTableBody.appendChild(projectRow);
+            });
+        }
+        
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 添加设计师
+            document.getElementById('add-designer-btn').addEventListener('click', () => {
+                const nameInput = document.getElementById('designer-name');
+                const name = nameInput.value.trim();
+                
+                if (!name) {
+                    alert('请输入设计师姓名');
+                    return;
+                }
+                
+                const newDesigner = {
+                    id: Date.now().toString(),
+                    name: name
+                };
+                
+                designers.push(newDesigner);
+                saveData();
+                renderDesigners();
+                renderDesignerOptions();
+                initFilters();
+                
+                nameInput.value = '';
+                nameInput.focus();
+            });
+            
+            // 编辑设计师
+            designersContainer.addEventListener('click', (e) => {
+                if (e.target.closest('.edit-designer')) {
+                    const designerId = e.target.closest('.edit-designer').dataset.id;
+                    const designer = designers.find(d => d.id === designerId);
+                    
+                    if (designer) {
+                        const newName = prompt('请输入设计师新名称：', designer.name);
+                        if (newName && newName.trim() !== '') {
+                            designer.name = newName.trim();
+                            saveData();
+                            renderDesigners();
+                            renderDesignerOptions();
+                            initFilters();
+                            renderProjects();
+                        }
+                    }
+                }
+                
+                // 删除设计师
+                if (e.target.closest('.delete-designer')) {
+                    const designerId = e.target.closest('.delete-designer').dataset.id;
+                    
+                    if (confirm('确定要删除这个设计师吗？所有相关项目也将被删除！')) {
+                        // 删除设计师
+                        designers = designers.filter(d => d.id !== designerId);
+                        // 删除相关项目
+                        projects = projects.filter(p => p.designerId !== designerId);
+                        
+                        saveData();
+                        renderDesigners();
+                        renderDesignerOptions();
+                        initFilters();
+                        renderProjects();
+                    }
+                }
+            });
+            
+            // 添加/更新项目
+            document.getElementById('project-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const designerId = document.getElementById('project-designer').value;
+                const address = document.getElementById('project-address').value.trim();
+                
+                if (!designerId) {
+                    alert('请选择设计师');
+                    return;
+                }
+                
+                if (!address) {
+                    alert('请输入客户地址');
+                    return;
+                }
+                
+                const projectData = {
+                    designerId: designerId,
+                    address: address,
+                    signed: document.getElementById('project-signed').checked,
+                    started: document.getElementById('project-started').checked,
+                    effectDrawing: document.getElementById('project-effect-drawing').checked,
+                    effectSettled: document.getElementById('project-effect-settled').checked,
+                    constructionDrawing: document.getElementById('project-construction-drawing').checked,
+                    constructionUploaded: document.getElementById('project-construction-uploaded').checked,
+                    date: new Date().toISOString()
+                };
+                
+                if (editingProjectId !== null) {
+                    // 更新现有项目
+                    const index = projects.findIndex(p => p.id === editingProjectId);
+                    if (index !== -1) {
+                        // 保留相同的ID
+                        projectData.id = editingProjectId;
+                        projects[index] = projectData;
+                    }
+                    cancelEdit();
+                } else {
+                    // 添加新项目
+                    const newProject = {
+                        id: Date.now().toString(),
+                        ...projectData
+                    };
+                    projects.push(newProject);
+                }
+                
+                saveData();
+                renderProjects();
+                
+                // 重置表单
+                document.getElementById('project-form').reset();
+            });
+            
+            // 编辑项目
+            projectsTableBody.addEventListener('click', (e) => {
+                if (e.target.closest('.edit-project')) {
+                    const projectId = e.target.closest('.edit-project').dataset.id;
+                    const project = projects.find(p => p.id === projectId);
+                    
+                    if (project) {
+                        editingProjectId = project.id;
+                        // 填充表单
+                        document.getElementById('project-designer').value = project.designerId;
+                        document.getElementById('project-address').value = project.address;
+                        document.getElementById('project-signed').checked = project.signed;
+                        document.getElementById('project-started').checked = project.started;
+                        document.getElementById('project-effect-drawing').checked = project.effectDrawing;
+                        document.getElementById('project-effect-settled').checked = project.effectSettled;
+                        document.getElementById('project-construction-drawing').checked = project.constructionDrawing;
+                        document.getElementById('project-construction-uploaded').checked = project.constructionUploaded;
+                        
+                        // 更新UI显示
+                        editIndicator.style.display = 'block';
+                        cancelEditBtn.style.display = 'inline-block';
+                        
+                        // 触发条件复选框更新
+                        document.getElementById('project-effect-drawing').dispatchEvent(new Event('change'));
+                        document.getElementById('project-construction-drawing').dispatchEvent(new Event('change'));
+                        
+                        renderProjects();
+                    }
+                }
+                
+                // 删除项目
+                if (e.target.closest('.delete-project')) {
+                    const projectId = e.target.closest('.delete-project').dataset.id;
+                    
+                    if (confirm('确定要删除这个项目吗？')) {
+                        projects = projects.filter(p => p.id !== projectId);
+                        saveData();
+                        renderProjects();
+                    }
+                }
+            });
+            
+            // 项目筛选
+            document.getElementById('designer-filter').addEventListener('change', renderProjects);
+            document.getElementById('status-filter').addEventListener('change', renderProjects);
+            
+            // 取消编辑
+            cancelEditBtn.addEventListener('click', cancelEdit);
+        }
+        
+        // 取消编辑状态
+        function cancelEdit() {
+            editingProjectId = null;
+            document.getElementById('project-form').reset();
+            editIndicator.style.display = 'none';
+            cancelEditBtn.style.display = 'none';
+            renderProjects();
+        }
+        
+        // 保存数据到localStorage
+        function saveData() {
+            localStorage.setItem('designers', JSON.stringify(designers));
+            localStorage.setItem('projects', JSON.stringify(projects));
+        }
+    </script>
+</body>
+</html>
